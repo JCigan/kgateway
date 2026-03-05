@@ -180,7 +180,8 @@ func (i *BackendIndex) AddBackends(gk schema.GroupKind, col krt.Collection[ir.Ba
 		}
 		backendObj.RequiresPolicyStatus = anyHasRef
 		backendObj.AttachedPolicies = ToAttachedPolicies(policies)
-		return new(&backendObj)
+		ptr := &backendObj
+		return &ptr
 	}, i.krtopts.ToOptions("")...)
 	backendsRequiringPolicyStatus := krt.NewCollection(backendsWithPoliciesCol, func(ctx krt.HandlerContext, i *ir.BackendObjectIR) **ir.BackendObjectIR {
 		if i.RequiresPolicyStatus {
@@ -427,7 +428,8 @@ func GatewaysForEnvoyTransformationFunc(config *GatewayIndexConfig) func(kctx kr
 			if err != nil {
 				logger.Error("failed to parse per connection buffer limit", "error", err)
 			} else {
-				gwIR.PerConnectionBufferLimitBytes = new(uint32(limit.Value())) //nolint:gosec // G115: Kubernetes resource quantities are always non-negative
+				v := uint32(limit.Value()) //nolint:gosec // G115: Kubernetes resource quantities are always non-negative
+				gwIR.PerConnectionBufferLimitBytes = &v
 			}
 		}
 
@@ -442,10 +444,10 @@ func GatewaysForEnvoyTransformationFunc(config *GatewayIndexConfig) func(kctx kr
 				Parent:           gw,
 				AttachedPolicies: ToAttachedPolicies(config.PolicyIndex.GetTargetingPolicies(kctx, gwIR.ObjectSource, string(l.Name), gw.GetLabels())),
 				PolicyAncestorRef: gwv1.ParentReference{
-					Group:     new(gwv1.Group(wellknown.GatewayGVK.Group)),
-					Kind:      new(gwv1.Kind(wellknown.GatewayGVK.Kind)),
+					Group:     func() *gwv1.Group { v := gwv1.Group(wellknown.GatewayGVK.Group); return &v }(),
+					Kind:      func() *gwv1.Kind { v := gwv1.Kind(wellknown.GatewayGVK.Kind); return &v }(),
 					Name:      gwv1.ObjectName(gw.Name),
-					Namespace: new(gwv1.Namespace(gw.Namespace)),
+					Namespace: func() *gwv1.Namespace { v := gwv1.Namespace(gw.Namespace); return &v }(),
 				},
 			})
 		}
@@ -518,10 +520,10 @@ func GatewaysForEnvoyTransformationFunc(config *GatewayIndexConfig) func(kctx kr
 					Parent:           ls,
 					AttachedPolicies: ToAttachedPolicies(listenerPolicies),
 					PolicyAncestorRef: gwv1.ParentReference{
-						Group:     new(gwv1.Group(wellknown.XListenerSetGVK.Group)),
-						Kind:      new(gwv1.Kind(wellknown.XListenerSetGVK.Kind)),
+						Group:     func() *gwv1.Group { v := gwv1.Group(wellknown.XListenerSetGVK.Group); return &v }(),
+						Kind:      func() *gwv1.Kind { v := gwv1.Kind(wellknown.XListenerSetGVK.Kind); return &v }(),
 						Name:      gwv1.ObjectName(ls.Name),
-						Namespace: new(gwv1.Namespace(ls.Namespace)),
+						Namespace: func() *gwv1.Namespace { v := gwv1.Namespace(ls.Namespace); return &v }(),
 					},
 				})
 			}

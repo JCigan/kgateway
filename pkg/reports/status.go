@@ -409,10 +409,12 @@ func ensureParentRefNamespaces(parentRefs []gwv1.ParentReference, routeNamespace
 			e.Namespace = &routeNs
 		}
 		if e.Group == nil {
-			e.Group = new(gwv1.Group(wellknown.GatewayGVK.Group))
+			grp := gwv1.Group(wellknown.GatewayGVK.Group)
+			e.Group = &grp
 		}
 		if e.Kind == nil {
-			e.Kind = new(gwv1.Kind(wellknown.GatewayGVK.Kind))
+			knd := gwv1.Kind(wellknown.GatewayGVK.Kind)
+			e.Kind = &knd
 		}
 		return e
 	})

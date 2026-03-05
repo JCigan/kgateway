@@ -70,7 +70,8 @@ func (x *callbacks) getPeerInfo(sid int64, r *envoy_service_discovery_v3.Discove
 		// xDS auth is disabled, retrieve the role from Node metadata
 		p.role = roleFromRequest(r)
 		if usePod && r.GetNode() != nil {
-			p.podRef = new(getRef(r.GetNode()))
+			ref := getRef(r.GetNode())
+			p.podRef = &ref
 		}
 		return p, nil
 	}

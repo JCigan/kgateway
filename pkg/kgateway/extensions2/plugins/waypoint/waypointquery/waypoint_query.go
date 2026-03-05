@@ -347,10 +347,10 @@ func getAliases(
 		Name:      se.GetName(),
 	}
 	be, _ := commonCols.BackendIndex.GetBackendFromRef(ctx, objSrc, gwv1.BackendObjectReference{
-		Group:     new(gwv1.Group(objSrc.Group)),
-		Kind:      new(gwv1.Kind(objSrc.Kind)),
+		Group:     func() *gwv1.Group { v := gwv1.Group(objSrc.Group); return &v }(),
+		Kind:      func() *gwv1.Kind { v := gwv1.Kind(objSrc.Kind); return &v }(),
 		Name:      gwv1.ObjectName(objSrc.Name),
-		Namespace: new(gwv1.Namespace(objSrc.Namespace)),
+		Namespace: func() *gwv1.Namespace { v := gwv1.Namespace(objSrc.Namespace); return &v }(),
 		Port:      new(gwv1.PortNumber(se.Spec.GetPorts()[0].GetNumber())), //nolint:gosec // G115: ServiceEntry port number is uint32, safe to convert to PortNumber (int32)
 	})
 	if be == nil {

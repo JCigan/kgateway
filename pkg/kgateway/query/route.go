@@ -252,7 +252,7 @@ func (r *gatewayQueries) getDelegatedChildren(
 					ParentRef: gwv1.ParentReference{
 						Group:     ptr.To(gwv1.Group(wellknown.GatewayGroup)),
 						Kind:      ptr.To(gwv1.Kind(wellknown.HTTPRouteKind)),
-						Namespace: new(gwv1.Namespace(parent.Namespace)),
+						Namespace: func() *gwv1.Namespace { v := gwv1.Namespace(parent.Namespace); return &v }(),
 						Name:      gwv1.ObjectName(parent.Name),
 					},
 					ListenerParentRef: listenerRef,
